@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, redirect, request, url_for, session
+from flask import Flask, render_template, redirect, request, url_for, session, flash
 import db_users
 
 app = Flask(__name__)
@@ -19,18 +19,48 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # If entered data exist in DB, user will be logged in and username saved to session storage
+        # If entered data exist in DB, user will be logged in and username saved to session storage, else error message is displayed
         login_data = db_users.check_username_password(username, password)
         print(login_data)
         if login_data:
             print('Login successfull')
             session['username'] = request.form['username']
-            return redirect(url_for('index'))
+            flash('Welcome back!')  
+            return redirect(url_for('account'))
         else:
             print('Not successful')
-            return render_template('login.html')
+            error_wrong_username_password = 'Wrong username or password, please try again'
+            return render_template('login.html', message=error_wrong_username_password)
     return render_template('login.html')
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        first = request.form['first_name'].title()
+        last = request.form['last_name'].title()
+        username = request.form['username']
+        password = request.form['password']
+        # Check DB if username is availible
+        username_availible = db_users.check_username_dont_exists(username)
+        print(username_availible)
+        if username_availible:
+            # User data added to DB, user redirected to account page, username saved to session storage
+            db_users.add_new_user_to_db(first, last, username, password)
+            print('Registration successfull')
+            session['username'] = request.form['username']
+            flash('Welcome to your new account!')
+            return redirect(url_for('account'))
+        else:
+            print('Username taken, please choose a new one')
+            # Display error message if username already taken
+            error_username_taken = 'Username is already taken, please choose a new one'
+            return render_template('register.html', message=error_username_taken)
+    return render_template('register.html')
+
+@app.route('/account')
+def account():
+    username = session['username']
+    return render_template('account.html', username=username)
 
 @app.route('/logout')
 def logout():

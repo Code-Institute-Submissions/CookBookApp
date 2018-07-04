@@ -1,0 +1,18 @@
+{% extends 'base.html' %} {% block content %}
+
+
+<h1>Account Page</h1>
+
+<p class="flow-text">Hey {{ username.title() }}!</p>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p class="flow-text">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+
+{% endblock %}

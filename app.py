@@ -1,7 +1,9 @@
 import os
 from flask import Flask, render_template, redirect, request, url_for, session, flash
 from validate import RegistrationForm
+import fractions
 import db_users
+import db_read
 
 app = Flask(__name__)
 app.secret_key = "fhkjashgdfkhakjdfgkjasdgf"
@@ -70,6 +72,28 @@ def register():
 def account():
     username = session['username']
     return render_template('account.html', username=username)
+
+@app.route('/recipes')
+def recipes():
+    recipes = db_read.recipe_short()
+    for entry in recipes:
+        description = entry.description.split("\r")
+    return render_template('recipes.html', recipes=recipes, description=description)
+
+@app.route('/recipes/details/<recipe_id>')
+def recipe_details(recipe_id):
+    # Get all recipe data except ingredients
+    data = db_read.recipe_details_description(recipe_id)
+    # Split description into steps
+    for entry in data:
+        steps = entry.steps.split("\r")
+        description = entry.description.split("\r")
+    # Get ingredients for recipe, format floats
+    ingredients_data = db_read.recipe_ingredients(recipe_id)
+    for entry in ingredients_data:
+        formatted_quantity = ('{} = {}'.format(entry.quantity, fractions.Fraction(entry.quantity)))
+        entry.quantity = formatted_quantity[6:]
+    return render_template('recipe_details.html', data=data, steps=steps, description=description, ingredients=ingredients_data)
 
 @app.route('/logout')
 def logout():

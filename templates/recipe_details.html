@@ -1,0 +1,76 @@
+{% extends 'base.html' %} {% block content %}
+
+
+<h1>Recipe Details</h1>
+
+
+<div class="row">
+    <div class=" col s12">
+
+        {% for entry in data %}
+
+        <div class="row">
+            <div class="col s12">
+                <h3>{{ entry.title }}</h3>
+                <p class="flow-text"><i>{{ entry.type_of_food }}</i></p>
+            </div>
+        </div>
+
+        <div class="row">
+        <!-- Data -->
+            <div class="col s12 m6">
+                <p>Prepare time: {{ entry.minutes }} minutes</p>
+                <p>Servings: {{ entry.servings }}</p>
+                <p>Author: {{ entry.username.title() }}</p>
+                <p>Created: {{ entry.creation_date.strftime('%d.%m.%Y') }}</p>
+            
+            </div>
+        <!-- Description -->
+            <div class="col s12 m6">
+                {% for paragraph in description %}
+                    <p>{{ paragraph }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Image -->
+        <div class="row">
+            <div class="col s12">
+                <img src="{{ entry.image }}" class="responsive-img">
+            </div>
+        </div>
+        
+        {% endfor %}
+
+        <div class="row">
+        <!-- Ingredients -->
+            <div class="col s12 m4">
+                <h4>Ingredients:</h4>
+                {% for entry in ingredients %}
+                <p>{{ entry.quantity }} {{ entry.unit }} {{ entry.ingredient }}</p>
+                {% endfor %}
+            </div>
+            <!-- Steps -->
+            <div class="col s12 m8">
+                <h4>Steps:</h4>
+                {% for step in steps %}
+                    {% if 'Step' in step %}
+                        <h5>{{ step }}</h5>
+                    {% else %}
+                        <p>{{ step }}</p>
+                    {% endif %}
+                {% endfor %}
+
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+<!--  steps -->

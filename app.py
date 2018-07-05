@@ -2,6 +2,8 @@ import os
 from flask import Flask, render_template, redirect, request, url_for, session, flash
 from validate import RegistrationForm
 import fractions
+from natsort import natsorted
+from operator import itemgetter
 import db_users
 import db_read
 
@@ -70,8 +72,48 @@ def register():
 
 @app.route('/account')
 def account():
-    username = session['username']
+    # Fix error when trying to access account page from url
+    if 'username' in session:
+        username = session['username']
+    else:
+        return redirect(url_for('index'))
     return render_template('account.html', username=username)
+
+@app.route('/account/addrecipe', methods=['GET', 'POST'])
+def add_recipe():
+    # Redirect when trying to access add recipe page from url
+    if 'username' in session:
+        username = session['username']
+    else:
+        return redirect(url_for('login'))
+    # Get data for dropdown selection from DB, sort numerical values
+    types = db_read.get_food_types()
+    servings_data = db_read.get_number_of_servings()
+    servings = []
+    for entry in natsorted(servings_data, key=itemgetter(1), reverse=False):
+        servings.append(entry)
+    minutes_data = db_read.get_preparation_time()
+    minutes = []
+    for entry in natsorted(minutes_data, key=itemgetter(1), reverse=False):
+        minutes.append(entry)
+    # Get all ingredients data from form
+    if request.method == 'POST':
+        quantities = request.form.getlist('quantity[]')
+        if quantities:
+            quantities.insert(0, request.form['quantity'])
+        units = request.form.getlist('unit[]')
+        if units:
+            units.insert(0, request.form['unit'])
+        ingredients = request.form.getlist('ingredient[]')
+        if ingredients:
+            ingredients.insert(0, request.form['ingredient'])
+        input_data = zip(quantities, units, ingredients)
+        sorted_input_data = list(input_data)
+        print(sorted_input_data)
+        # Get ID of new recipe and open that page with recipe details
+        #return redirect(url_for('recipe_details', recipe_id=recipe_id))
+    
+    return render_template('recipe_add.html', username=username, types=types, n_servings=servings, n_minutes=minutes)
 
 @app.route('/recipes')
 def recipes():

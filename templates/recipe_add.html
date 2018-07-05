@@ -1,0 +1,120 @@
+{% extends 'base.html' %} {% block content %}
+
+
+<h1>Add Recipe</h1>
+
+<div class="row">
+
+    <form action="{{ url_for('add_recipe') }}" method="POST" class="col s12">
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="title" name="title" type="text" class="validate">
+                <label for="title">Recipe title</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m4">
+                <select>
+                    <option value="" disabled selected>Type of food</option>
+                    {% for entry in types %}
+                        {% if 'Other' not in entry.type_of_food %}
+                            <option value="{{ entry.type_id }}">{{ entry.type_of_food }}</option>
+                        {% endif %}
+                    {% endfor %}
+                    <option value="da3d511d-5699-4b30-bf2e-4ce442cec4f1">Other</option>
+
+                </select>
+            </div>
+            <div class="input-field col s12 m4">
+                <select>
+                    <option value="" disabled selected>Number of servings</option>
+                    {% for entry in n_servings %}
+                        <option value="{{ entry.serving_id }}">{{ entry.servings }}</option>
+                    {% endfor %}
+            
+                </select>
+            </div>
+            <div class="input-field col s12 m4">
+                <select>
+                    <option value="" disabled selected>Preparation time (minutes)</option>
+                    {% for entry in n_minutes %}
+                        <option value="{{ entry.time_id }}">{{ entry.minutes }}</option>
+                    {% endfor %}
+            
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <textarea id="description" name="description" class="materialize-textarea"></textarea>
+                <label for="description">Description</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="image" name="image" type="text" class="validate" >
+                <label for="image">Image Url</label>
+            </div>
+        </div>
+        <p class="flow-text">Ingredients:</p>
+        <div id="ingredientsRows">
+            <div class="row" id="rowNum">
+                <div class="input-field col s2">
+                    <input name="quantity" value="" type="text" placeholder="Quantity">
+                </div>
+                <div class="input-field col s4">
+                    <input name="unit" value="" type="text" placeholder="Unit">
+                </div>
+                <div class="input-field col s6">
+                    <input name="ingredient" value="" type="text" placeholder="Ingredient">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <button class="input-field btn-floating btn-large waves-effect waves-light cyan accent-4" onclick="addRow(this.form);" type="button" value="Add row">
+                <i class="material-icons">add</i>
+            </button>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <textarea id="steps" name="steps" class="materialize-textarea"></textarea>
+                <label for="steps">Preparation steps</label>
+            </div>
+        </div>
+        <div class="row">
+            <button class="btn waves-effect waves-light" type="submit" name="action">Submit </button>
+        </div>
+
+    </form>
+
+</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+<script>
+    $(document).ready(function(){
+      $('select').formSelect();
+    });
+</script>
+
+<script>
+    var rowNum = 0;
+    function addRow(frm) {
+        rowNum ++;
+        var row = '<div class="row" id="rowNum'+rowNum+'"> \
+                  <div class="input-field col s2"><input name="quantity[]" value="'+frm.quantity.value+'" type="text" placeholder="Quantity"></div> \
+                  <div class="input-field col s4"><input name="unit[]" value="'+frm.unit.value+'" type="text" placeholder="Unit"></div> \
+                  <div class="input-field col s5"><input name="ingredient[]" value="'+frm.ingredient.value+'" type="text" placeholder="Ingredient"></div> \
+                  <button class="input-field btn-floating btn-large waves-effect waves-light red accent-2" onclick="removeRow('+rowNum+');" type="button" value="Remove"> \
+                  <i class="material-icons">delete_forever</i></button></div>';
+        jQuery('#ingredientsRows').prepend(row);
+        frm.quantity.value = '';
+        frm.unit.value = '';
+        frm.ingredient.value = '';
+    };
+    function removeRow(rnum) {
+        jQuery('#rowNum'+rnum).remove();
+    };
+</script>
+
+{% endblock %}

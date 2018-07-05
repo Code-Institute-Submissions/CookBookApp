@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template, redirect, request, url_for, session, flash
+from validate import RegistrationForm
 import db_users
 
 app = Flask(__name__)
@@ -30,32 +31,40 @@ def login():
         else:
             print('Not successful')
             error_wrong_username_password = 'Wrong username or password, please try again'
-            return render_template('login.html', message=error_wrong_username_password)
+            return render_template('login.html', error_message=error_wrong_username_password)
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        first = request.form['first_name'].title()
-        last = request.form['last_name'].title()
-        username = request.form['username']
-        password = request.form['password']
-        # Check DB if username is availible
-        username_availible = db_users.check_username_dont_exists(username)
-        print(username_availible)
-        if username_availible:
-            # User data added to DB, user redirected to account page, username saved to session storage
-            db_users.add_new_user_to_db(first, last, username, password)
-            print('Registration successfull')
-            session['username'] = request.form['username']
-            flash('Welcome to your new account!')
-            return redirect(url_for('account'))
+    form = RegistrationForm(request.form)
+    # Check if fields are valid with validate() method
+    if request.method == 'POST' and form.validate():
+        first = form.first.data.title()
+        last = form.last.data.title()
+        username = form.username.data
+        password = form.password.data
+        # Check if name contains only alpha characters
+        if first.isalpha() and last.isalpha():
+            # Check DB if username is availible
+            username_availible = db_users.check_username_dont_exists(username)
+            print(username_availible)
+            if username_availible:
+                # User data added to DB, user redirected to account page, username saved to session storage
+                db_users.add_new_user_to_db(first, last, username, password)
+                print('Registration successfull')
+                session['username'] = form.username.data
+                flash('Welcome to your new account!')
+                return redirect(url_for('account'))
+            else:
+                print('Username taken, please choose a new one')
+                # Display error message if username already taken
+                error_username_taken = 'Username is already taken, please choose a new one'
+                return render_template('register.html', form=form, error_message=error_username_taken)
         else:
-            print('Username taken, please choose a new one')
-            # Display error message if username already taken
-            error_username_taken = 'Username is already taken, please choose a new one'
-            return render_template('register.html', message=error_username_taken)
-    return render_template('register.html')
+            # Error message if name contains anything else than alpha characters
+            error_wrong_name = 'Please enter your name'
+            return render_template('register.html', form=form, error_message=error_wrong_name)
+    return render_template('register.html', form=form)
 
 @app.route('/account')
 def account():

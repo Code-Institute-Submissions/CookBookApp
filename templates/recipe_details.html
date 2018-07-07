@@ -27,7 +27,7 @@
             </div>
         <!-- Description -->
             <div class="col s12 m6">
-                {% for paragraph in description %}
+                {% for paragraph in entry.description %}
                     <p>{{ paragraph }}</p>
                 {% endfor %}
             </div>
@@ -53,12 +53,14 @@
             <!-- Steps -->
             <div class="col s12 m8">
                 <h4>Steps:</h4>
-                {% for step in steps %}
-                    {% if 'Step' in step %}
-                        <h5>{{ step }}</h5>
-                    {% else %}
-                        <p>{{ step }}</p>
-                    {% endif %}
+                {% for entry in data %}
+                    {% for step in entry.steps %}
+                        {% if 'Step' in step %}
+                            <h5>{{ step }}</h5>
+                        {% else %}
+                            <p>{{ step }}</p>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
 
 

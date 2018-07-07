@@ -14,7 +14,7 @@
         </div>
         <div class="row">
             <div class="input-field col s12 m4">
-                <select>
+                <select name="type_option">
                     <option value="" disabled selected>Type of food</option>
                     {% for entry in types %}
                         {% if 'Other' not in entry.type_of_food %}
@@ -26,16 +26,16 @@
                 </select>
             </div>
             <div class="input-field col s12 m4">
-                <select>
+                <select name="servings_option">
                     <option value="" disabled selected>Number of servings</option>
                     {% for entry in n_servings %}
-                        <option value="{{ entry.serving_id }}">{{ entry.servings }}</option>
+                        <option value="{{ entry.servings_id }}">{{ entry.servings }}</option>
                     {% endfor %}
             
                 </select>
             </div>
             <div class="input-field col s12 m4">
-                <select>
+                <select name="minutes_option">
                     <option value="" disabled selected>Preparation time (minutes)</option>
                     {% for entry in n_minutes %}
                         <option value="{{ entry.time_id }}">{{ entry.minutes }}</option>
@@ -65,15 +65,13 @@
                 <div class="input-field col s4">
                     <input name="unit" value="" type="text" placeholder="Unit">
                 </div>
-                <div class="input-field col s6">
+                <div class="input-field col s5">
                     <input name="ingredient" value="" type="text" placeholder="Ingredient">
                 </div>
+                <button class="btn-floating btn-large waves-effect waves-light blue lighten-1" onclick="addRow(this.form);" type="button" value="Add row">
+                    <i class="material-icons">add</i>
+                </button>
             </div>
-        </div>
-        <div class="row">
-            <button class="input-field btn-floating btn-large waves-effect waves-light cyan accent-4" onclick="addRow(this.form);" type="button" value="Add row">
-                <i class="material-icons">add</i>
-            </button>
         </div>
         <div class="row">
             <div class="input-field col s12">
@@ -105,9 +103,9 @@
                   <div class="input-field col s2"><input name="quantity[]" value="'+frm.quantity.value+'" type="text" placeholder="Quantity"></div> \
                   <div class="input-field col s4"><input name="unit[]" value="'+frm.unit.value+'" type="text" placeholder="Unit"></div> \
                   <div class="input-field col s5"><input name="ingredient[]" value="'+frm.ingredient.value+'" type="text" placeholder="Ingredient"></div> \
-                  <button class="input-field btn-floating btn-large waves-effect waves-light red accent-2" onclick="removeRow('+rowNum+');" type="button" value="Remove"> \
+                  <button class="btn-floating btn-large waves-effect waves-light red accent-2" onclick="removeRow('+rowNum+');" type="button" value="Remove"> \
                   <i class="material-icons">delete_forever</i></button></div>';
-        jQuery('#ingredientsRows').prepend(row);
+        jQuery('#ingredientsRows').append(row);
         frm.quantity.value = '';
         frm.unit.value = '';
         frm.ingredient.value = '';

@@ -1,9 +1,9 @@
 from cnxn import db_query, db_write
 
 # Add data from form to data_Recipe
-def add_new_recipe_to_db(recipe_id, title, description, steps, creation_date, image, user_id, type_selected, servings_selected, minutes_selected):
+def add_new_recipe_to_db(recipe_id, title, description, steps, creation_date, image, user_id, type_id, servings_id, time_id):
     db_write("""INSERT INTO data_Recipe(recipe_id, title, description, steps, creation_date, image, user_id, type_id, servings_id, time_id) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""", recipe_id, title, description, steps, creation_date, image, user_id, type_selected, servings_selected, minutes_selected)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""", recipe_id, title, description, steps, creation_date, image, user_id, type_id, servings_id, time_id)
     return
 
 

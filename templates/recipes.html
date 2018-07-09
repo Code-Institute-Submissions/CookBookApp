@@ -6,7 +6,7 @@
 
 <div class="row">
 
-    {% for recipe in recipes %}
+    {% for recipe in data %}
 
     <div class=" col s12 m6">
         <div class="card">
@@ -20,7 +20,7 @@
                 <p>{{ recipe.type_of_food }}</p>
             </div>
             <div class="card-action">
-                {% for paragraph in description %}
+                {% for paragraph in recipe.description %}
                     <p>{{ paragraph }}</p>
                 {% endfor %}
             </div>

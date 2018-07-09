@@ -5,54 +5,56 @@
 
 <div class="row">
 
-    <form action="{{ url_for('add_recipe') }}" method="POST" class="col s12">
+    <form action="{{ url_for('get_check_data') }}" method="POST" class="col s12">
         <div class="row">
             <div class="input-field col s12">
-                <input id="title" name="title" type="text" class="validate">
+                <input id="title" name="title" type="text" value="" class="validate" required >
                 <label for="title">Recipe title</label>
+                <span class="helper-text" data-error="Required field" ></span>
             </div>
         </div>
         <div class="row">
-            <div class="input-field col s12 m4">
-                <select name="type_option">
-                    <option value="" disabled selected>Type of food</option>
+            <div class="input-field col s12 m4" id="selectField">
+                <select value="" name="type_option" id="select1"  >
+                    <option value="" id="defaultSel1" disabled selected>Type of food</option>
                     {% for entry in types %}
                         {% if 'Other' not in entry.type_of_food %}
-                            <option value="{{ entry.type_id }}">{{ entry.type_of_food }}</option>
+                    <option value="{{ entry.type_id }}" >{{ entry.type_of_food }}</option>
                         {% endif %}
                     {% endfor %}
                     <option value="da3d511d-5699-4b30-bf2e-4ce442cec4f1">Other</option>
-
                 </select>
+                <span class="helper-text"><i>Select</i></span>
             </div>
             <div class="input-field col s12 m4">
-                <select name="servings_option">
+                <select value="" name="servings_option" id="select2"  >
                     <option value="" disabled selected>Number of servings</option>
                     {% for entry in n_servings %}
-                        <option value="{{ entry.servings_id }}">{{ entry.servings }}</option>
+                    <option value="{{ entry.servings_id }}">{{ entry.servings }}</option>
                     {% endfor %}
-            
                 </select>
+                <span class="helper-text"><i>Select</i></span>
             </div>
             <div class="input-field col s12 m4">
-                <select name="minutes_option">
+                <select value="" name="minutes_option" id="select3" >
                     <option value="" disabled selected>Preparation time (minutes)</option>
                     {% for entry in n_minutes %}
-                        <option value="{{ entry.time_id }}">{{ entry.minutes }}</option>
+                    <option value="{{ entry.time_id }}">{{ entry.minutes }}</option>
                     {% endfor %}
-            
                 </select>
+                <span class="helper-text"><i>Select</i></span>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <textarea id="description" name="description" class="materialize-textarea"></textarea>
+                <textarea id="description" name="description" value="" class="materialize-textarea validate"  required ></textarea>
                 <label for="description">Description</label>
+                <span class="helper-text" data-error="Required field" ></span>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <input id="image" name="image" type="text" class="validate" >
+                <input id="image" name="image" value="" type="text" class="validate" >
                 <label for="image">Image Url</label>
             </div>
         </div>
@@ -60,27 +62,32 @@
         <div id="ingredientsRows">
             <div class="row" id="rowNum">
                 <div class="input-field col s2">
-                    <input name="quantity" value="" type="text" placeholder="Quantity">
+                    <input id="quantity" name="quantity" value="" type="text" placeholder="Quantity" class=""  >
+                    <span class="helper-text" data-error="Required field, only numbers" ></span>
                 </div>
                 <div class="input-field col s4">
-                    <input name="unit" value="" type="text" placeholder="Unit">
+                    <input id="unit" name="unit" value="" type="text" placeholder="Unit" class=""  >
+                    <span class="helper-text" data-error="Required field" ></span>
                 </div>
                 <div class="input-field col s5">
-                    <input name="ingredient" value="" type="text" placeholder="Ingredient">
+                    <input id="ingredient" name="ingredient" value="" type="text" placeholder="Ingredient" class=""  >
+                    <span class="helper-text" data-error="Required field" ></span>
                 </div>
-                <button class="btn-floating btn-large waves-effect waves-light blue lighten-1" onclick="addRow(this.form);" type="button" value="Add row">
+                <button id="add-btn" class="btn-floating btn-large blue lighten-1" onclick="addRow(this.form);" type="button" value="Add row">
                     <i class="material-icons">add</i>
                 </button>
             </div>
         </div>
+        <p class="flow-text">Steps:</p>
         <div class="row">
             <div class="input-field col s12">
-                <textarea id="steps" name="steps" class="materialize-textarea"></textarea>
-                <label for="steps">Preparation steps</label>
+                <textarea id="steps" name="steps" class="materialize-textarea validate" placeholder="STEP 1" required ></textarea>
+                <label for="steps" >Preparation steps</label>
+                <span class="helper-text" data-error="Required field" ></span>
             </div>
         </div>
         <div class="row">
-            <button class="btn waves-effect waves-light" type="submit" name="action">Submit </button>
+            <button class="btn waves-effect waves-light" name="action" value="action" >Submit </button>
         </div>
 
     </form>
@@ -90,8 +97,74 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
 <script>
-    $(document).ready(function(){
-      $('select').formSelect();
+    $('input').attr('autocomplete', 'off');
+    var forms = $('form');
+    for (var i = 0; i < forms.length; i++) {
+    forms[i].addEventListener('invalid', function(e) {
+        e.preventDefault();
+    }, true);
+}
+</script>
+<script>
+    $(document).ready(function(){ 
+        M.updateTextFields();
+        $('select').formSelect();
+        // Disabled submit button until all fields are filled
+        var $submit = $(':button[type="submit"]');
+        $submit.prop('disabled', true);
+        $('form').change(function() {
+            if ($('#select1 :selected').val() !== "") {
+                if ($('#select2 :selected').val() !== "") {
+                    if ($('#select3 :selected').val() !== "") {
+                        if ($('#title').val() !== "") {
+                            if ($('#description').val() !== "") {
+                                if ($('#unit').val() !== "") {
+                                    if ($('#ingredient').val() !== "") {
+                                        if ($('#quantity').val() !== "") { 
+                                            if ($.isNumeric($('#quantity').val()) === true) {
+                                                $submit.prop('disabled', false);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                $submit.prop('disabled', true);
+            }
+        }).change();
+
+        $('#quantity').on("change paste keyup focusout", function() {
+            $(this).val($(this).val().replace(/,/g, '.'));
+            if ($.isNumeric($('#quantity').val()) === false) {
+                if ($('#quantity').val() !== "") {
+                    $('#quantity').addClass("invalid");
+                    $submit.prop('disabled', true);
+                } if ($('#quantity').val() === "") {
+                    $('#quantity').addClass("invalid");
+                }
+            } else {
+                $('#quantity').removeClass("invalid");
+            }
+        });
+        $('#ingredient').on("focusout", function() {
+            if ($('#ingredient').val() === "") {
+                    $('#ingredient').addClass("invalid");
+                } else {
+                $('#ingredient').removeClass("invalid");
+            }
+        });
+        $('#ingredient').on("focusout", function() {
+            if ($('#ingredient').val() === "") {
+                    $('#ingredient').addClass("invalid");
+                } else {
+                $('#ingredient').removeClass("invalid");
+            }
+        });    
+    
     });
 </script>
 

@@ -1,22 +1,57 @@
 import pyodbc
-import creds
+from creds import conn_str
 
-server = creds.server
-database = creds.database
-username = creds.username
-password = creds.password
-cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
-
-cursor = cnxn.cursor()
 
 # Read from DB
 def db_query(query, *kwargs):
+    cnxn = pyodbc.connect(conn_str)
+    cursor = cnxn.cursor()
     cursor.execute(query, *kwargs)
     results = cursor.fetchall()
+    
+    cursor.close()
+    cnxn.close()
+    return results
+
+# Read from separate tables, get all
+def db_query_many(query1, query2, query3):
+    cnxn = pyodbc.connect(conn_str)
+    cursor = cnxn.cursor()
+    
+    cursor.execute(query1)
+    data1 = cursor.fetchall()
+    cursor.execute(query2)
+    data2 = cursor.fetchall()
+    cursor.execute(query3)
+    data3 = cursor.fetchall()
+    results = [data1, data2, data3]
+
+    cursor.close()
+    cnxn.close()
+    return results
+
+# Read from DB, get one
+def db_query_one(query, *kwargs):
+    cnxn = pyodbc.connect(conn_str)
+    cursor = cnxn.cursor()
+    cursor.execute(query, *kwargs)
+    rows = cursor.fetchone()
+    results = []
+    for entry in rows:
+        results.append(entry)
+    
+    cursor.close()
+    cnxn.close()
     return results
 
 # Write to DB
 def db_write(query, *kwargs):
+    cnxn = pyodbc.connect(conn_str)
+    cursor = cnxn.cursor()
     cursor.execute(query, *kwargs)
+    
     cnxn.commit()
+    cursor.close()
+    cnxn.close()
     return
+    

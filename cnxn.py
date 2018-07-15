@@ -30,20 +30,6 @@ def db_query_many(query1, query2, query3):
     cnxn.close()
     return results
 
-# Read from DB, get one
-def db_query_one(query, *kwargs):
-    cnxn = pyodbc.connect(conn_str)
-    cursor = cnxn.cursor()
-    cursor.execute(query, *kwargs)
-    rows = cursor.fetchone()
-    results = []
-    for entry in rows:
-        results.append(entry)
-    
-    cursor.close()
-    cnxn.close()
-    return results
-
 # Write to DB
 def db_write(query, *kwargs):
     cnxn = pyodbc.connect(conn_str)
@@ -54,4 +40,4 @@ def db_write(query, *kwargs):
     cursor.close()
     cnxn.close()
     return
-    
+

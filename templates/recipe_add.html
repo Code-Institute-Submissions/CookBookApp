@@ -97,6 +97,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
 <script>
+    // Turn off autocomplete and prevent default notifications
     $('input').attr('autocomplete', 'off');
     var forms = $('form');
     for (var i = 0; i < forms.length; i++) {
@@ -137,6 +138,7 @@
             }
         }).change();
 
+         // Validation for quantity (can contain only numbers)
         $('#quantity').on("change paste keyup focusout", function() {
             $(this).val($(this).val().replace(/,/g, '.'));
             if ($.isNumeric($('#quantity').val()) === false) {
@@ -150,13 +152,15 @@
                 $('#quantity').removeClass("invalid");
             }
         });
-        $('#ingredient').on("focusout", function() {
-            if ($('#ingredient').val() === "") {
-                    $('#ingredient').addClass("invalid");
+        // Validation for unit field - must not be empty
+        $('#unit').on("focusout", function() {
+            if ($('#unit').val() === "") {
+                    $('#unit').addClass("invalid");
                 } else {
-                $('#ingredient').removeClass("invalid");
+                $('#unit').removeClass("invalid");
             }
         });
+        // Validation for ingredient field - must not be empty
         $('#ingredient').on("focusout", function() {
             if ($('#ingredient').val() === "") {
                     $('#ingredient').addClass("invalid");
@@ -169,6 +173,7 @@
 </script>
 
 <script>
+    // Add rows, remove rows - for ingredients input
     var rowNum = 0;
     function addRow(frm) {
         rowNum ++;

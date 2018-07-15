@@ -25,7 +25,7 @@
                 <p>Created: {{ entry.creation_date.strftime('%d.%m.%Y') }}</p>
             
                 {% if username == entry.username %}
-                <a href="{{ url_for('account') }}" class="btn waves-effect waves-light red" name="action" value="action" >
+                <a href="{{ url_for('edit_recipe', recipe_id=recipe_id) }}" class="btn waves-effect waves-light red" name="action" value="action" >
                     Edit <i class="material-icons right">edit</i>
                 </a>
                 {% endif %}

@@ -87,9 +87,13 @@
             </div>
         </div>
         <div class="row">
-            <button class="btn waves-effect waves-light" name="action" value="action" >Submit </button>
+            <button class="btn waves-effect waves-light" name="action" value="action" type="submit" onclick="loading();" >Submit </button>
         </div>
 
+        <div id="loading-div" class="">
+            <div class="indeterminate"></div>
+        </div>
+            
     </form>
 
 </div>
@@ -97,7 +101,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
 <script>
-    // Turn off autocomplete and prevent default notifications
+// Turn off autocomplete and prevent default notifications
     $('input').attr('autocomplete', 'off');
     var forms = $('form');
     for (var i = 0; i < forms.length; i++) {
@@ -110,8 +114,8 @@
     $(document).ready(function(){ 
         M.updateTextFields();
         $('select').formSelect();
-        // Disabled submit button until all fields are filled
-        var $submit = $(':button[type="submit"]');
+// Disabled submit button until all fields are filled
+        var $submit = $('button[type="submit"]');
         $submit.prop('disabled', true);
         $('form').change(function() {
             if ($('#select1 :selected').val() !== "") {
@@ -119,11 +123,13 @@
                     if ($('#select3 :selected').val() !== "") {
                         if ($('#title').val() !== "") {
                             if ($('#description').val() !== "") {
-                                if ($('#unit').val() !== "") {
-                                    if ($('#ingredient').val() !== "") {
-                                        if ($('#quantity').val() !== "") { 
-                                            if ($.isNumeric($('#quantity').val()) === true) {
+                                if ($('#steps').val() !== "") {
+                                    if ($('#unit').val() !== "") {
+                                        if ($('#ingredient').val() !== "") {
+                                            if ($('#quantity').val() !== "") { 
+                                                if ($.isNumeric($('#quantity').val()) === true) {
                                                 $submit.prop('disabled', false);
+                                                }
                                             }
                                         }
                                     }
@@ -138,7 +144,7 @@
             }
         }).change();
 
-         // Validation for quantity (can contain only numbers)
+// Validation for quantity (can contain only numbers)
         $('#quantity').on("change paste keyup focusout", function() {
             $(this).val($(this).val().replace(/,/g, '.'));
             if ($.isNumeric($('#quantity').val()) === false) {
@@ -152,7 +158,7 @@
                 $('#quantity').removeClass("invalid");
             }
         });
-        // Validation for unit field - must not be empty
+// Validation for unit field - must not be empty
         $('#unit').on("focusout", function() {
             if ($('#unit').val() === "") {
                     $('#unit').addClass("invalid");
@@ -160,7 +166,7 @@
                 $('#unit').removeClass("invalid");
             }
         });
-        // Validation for ingredient field - must not be empty
+// Validation for ingredient field - must not be empty
         $('#ingredient').on("focusout", function() {
             if ($('#ingredient').val() === "") {
                     $('#ingredient').addClass("invalid");
@@ -173,7 +179,7 @@
 </script>
 
 <script>
-    // Add rows, remove rows - for ingredients input
+// Add rows, remove rows - for ingredients input
     var rowNum = 0;
     function addRow(frm) {
         rowNum ++;
@@ -190,6 +196,12 @@
     };
     function removeRow(rnum) {
         jQuery('#rowNum'+rnum).remove();
+    };
+</script>
+
+<script>
+    function loading() {
+        $('#loading-div').addClass('progress');
     };
 </script>
 

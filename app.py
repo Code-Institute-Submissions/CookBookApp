@@ -6,9 +6,11 @@ from datetime import datetime
 import re
 import uuid
 import helpers
+import check_ingr_data
 import db_users
 import db_recipes
 import db_recipe_add
+import db_recipe_edit
 
 app = Flask(__name__)
 app.secret_key = "fhkjashgdfkhakjdfgkjasdgf"
@@ -112,9 +114,9 @@ def get_check_data():
         user_id = uuid.UUID(session['user_id'])
         creation_date = datetime.now()
         title = helpers.remove_whitespaces(request.form['title']).strip().title()
-        description = request.form['description']
+        description = request.form['description'].strip()
         image = request.form['image'].strip()
-        steps = request.form['steps']
+        steps = request.form['steps'].strip()
         
     # Get IDs of selected dropdown data, converted to UUIDs
         type_id = uuid.UUID(request.form.get('type_option'))
@@ -128,58 +130,11 @@ def get_check_data():
         units.append(request.form['unit'])
         ingredients = request.form.getlist('ingredient[]')
         ingredients.append(request.form['ingredient'])
-
-        # IDs for entered data
-        quantity_ids = []
-        unit_ids = []
-        ingredient_ids = []
-    # Check type and format quantity, check if ingredients data exists in DB
-        for q in quantities:
-            q2 = q.replace(",", ".")
-            if helpers.isFloat(q2):
-                q = float(q2)
-            else:
-                q = float('0')
-            q_data = db_recipe_add.check_if_quantity_in_db(q)
-        # If quantity data exists in DB, get their ID, else create it and add new record to dft_tablee
-            if q_data:
-                q_id_data = db_recipe_add.get_quantity_id(q)
-                for data in q_id_data:
-                    q_id = data.quantity_id
-                    quantity_ids.append(q_id)
-            else:
-                q_id = uuid.uuid4()
-                quantity_ids.append(q_id)
-                db_recipe_add.add_new_quantity(q_id, q)
-    # If units data exists in DB, get their ID, else create it and add new record to dft_table
-        for u in units:
-            u = u.strip().lower()
-            u_data = db_recipe_add.check_if_unit_in_db(u)
-            print(u_data)
-            if u_data:
-                u_id_data = db_recipe_add.get_unit_id(u)
-                for data in u_id_data:
-                    u_id = data.unit_id
-                    unit_ids.append(u_id)
-            else:
-                u_id = uuid.uuid4()
-                unit_ids.append(u_id)
-                db_recipe_add.add_new_unit(u_id, u)
-    # If ingredients data exists in DB, get their ID, else create it and add new record to dft_table
-        for i in ingredients:
-            i = i.strip().lower()
-            i_data = db_recipe_add.check_if_ingredient_in_db(i)
-            print(i_data)
-            if i_data:
-                i_id_data = db_recipe_add.get_ingredient_id(i)
-                for data in i_id_data:
-                    i_id = data.ingredient_id
-                    ingredient_ids.append(i_id)
-            else:
-                i_id = uuid.uuid4()
-                ingredient_ids.append(i_id)
-                db_recipe_add.add_new_ingredient(i_id, i)
-
+        
+    # Check data, get IDs, add to DB if not there, ... return list of IDs
+        quantity_ids = check_ingr_data.check_data_quantities(quantities)
+        unit_ids = check_ingr_data.check_data_units(units)
+        ingredient_ids = check_ingr_data.check_data_ingredients(ingredients)
 
     # Merge lists with IDs and add each group + recipe_id to data_Ingredients
         for i,u,q in zip(ingredient_ids, unit_ids, quantity_ids):
@@ -193,6 +148,75 @@ def get_check_data():
 
     return
 
+@app.route('/account/editrecipe/<recipe_id>', methods=['GET', 'POST'])
+def edit_recipe(recipe_id):
+    # Redirect when trying to access add recipe page from url
+    if 'username' in session:
+        username = session['username']
+    else:
+        return redirect(url_for('login'))
+        
+    # Get data for dropdown selection from DB, sort numerical values
+    data = db_recipes.get_types_servings_time()
+    types = data[0]
+    servings = []
+    minutes = []
+    helpers.sort_numbers(data[1], servings)
+    helpers.sort_numbers(data[2], minutes)
+    
+    # Get all recipe data from DB, format quantity
+    rec_data = db_recipe_edit.recipe_details_description(recipe_id)
+    ing_data = db_recipe_edit.recipe_ingredients(recipe_id)
+    for entry in ing_data:
+        f_quantity = ('{}'.format(round(fractions.Fraction(entry.quantity), 1)))
+        entry.quantity = f_quantity
+    
+    return render_template('recipe_edit.html', username=username, recipe_id=recipe_id, rec_data=rec_data, ing_data=ing_data, types=types, n_servings=servings, n_minutes=minutes)
+
+@app.route('/account/editrecipe/check_data/<recipe_id>', methods=['GET', 'POST'])
+def compare_data(recipe_id):
+    if request.method == 'POST':
+        recipe_id = uuid.UUID(recipe_id)
+    # Get updated data from form
+        title = request.form['title'].strip().title()
+        description = request.form['description'].strip()
+        image = request.form['image'].strip()
+        steps = request.form['steps'].strip()
+        type_id = uuid.UUID(request.form.get('type_option'))
+        servings_id = uuid.UUID(request.form.get('servings_option'))
+        time_id = uuid.UUID(request.form.get('minutes_option'))
+    
+    # Get checked ingredients IDs for delete, delete row in data_Ingredients
+        i_del_ids = request.form.getlist('old-ingredient[]')
+        for i in i_del_ids:
+            db_recipe_edit.delete_row_ingredient_data(i)
+    
+    # Get new ingredients data from form
+        quantities = request.form.getlist('quantity[]')
+        if request.form['quantity'] != "":
+            quantities.append(request.form['quantity'])
+        units = request.form.getlist('unit[]')
+        if request.form['unit'] != "":
+            units.append(request.form['unit'])
+        ingredients = request.form.getlist('ingredient[]')
+        if request.form['ingredient'] != "":
+            ingredients.append(request.form['ingredient'])
+        
+    # Check new data, get IDs, add to DB if not there, ... return list of IDs
+        quantity_ids = check_ingr_data.check_data_quantities(quantities)
+        unit_ids = check_ingr_data.check_data_units(units)
+        ingredient_ids = check_ingr_data.check_data_ingredients(ingredients)
+        
+    # Merge lists with IDs and add each group + recipe_id to data_Ingredients
+        for i,u,q in zip(ingredient_ids, unit_ids, quantity_ids):
+                db_recipe_add.add_new_ingredient_to_db(i, u, q, recipe_id)
+    
+    # Update data_Recipe
+        db_recipe_edit.update_recipe_data(recipe_id, title, description, steps, image, type_id, servings_id, time_id)
+   
+
+        
+    return redirect(url_for('recipe_details', recipe_id=recipe_id))
 
 @app.route('/recipes')
 def recipes():
@@ -221,7 +245,7 @@ def recipe_details(recipe_id):
         f_quantity = ('{}'.format(round(fractions.Fraction(entry.quantity), 1)))
         entry.quantity = f_quantity
 
-    return render_template('recipe_details.html', username=username, data=data, ingredients=ingredients_data)
+    return render_template('recipe_details.html', username=username, recipe_id=recipe_id, data=data, ingredients=ingredients_data)
 
 @app.route('/logout')
 def logout():

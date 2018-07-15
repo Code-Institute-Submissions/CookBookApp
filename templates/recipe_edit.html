@@ -1,0 +1,215 @@
+{% extends 'base.html' %} {% block content %}
+
+<style>
+    .cross-text {
+        text-decoration: line-through;
+    }
+</style>
+
+<h1>Edit Recipe</h1>
+
+<div class="row">
+
+    <form action="{{ url_for('compare_data', recipe_id=recipe_id) }}" method="POST" class="col s12">
+    {% for e in rec_data %}
+        
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="title" name="title" type="text" value="{{ e.title }}" class="validate" required >
+                <label for="title">Recipe title</label>
+                <span class="helper-text" data-error="Required field" ></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m4" id="selectField">
+                <select value="" name="type_option" id="select1"  >
+                    <option value="{{ e.type_id }}" id="defaultSel1" selected>{{ e.type_of_food }}</option>
+                    {% for entry in types %}
+                        {% if 'Other' not in entry.type_of_food %}
+                    <option value="{{ entry.type_id }}" >{{ entry.type_of_food }}</option>
+                        {% endif %}
+                    {% endfor %}
+                    <option value="da3d511d-5699-4b30-bf2e-4ce442cec4f1">Other</option>
+                </select>
+                <span class="helper-text"><i>Select</i></span>
+            </div>
+            <div class="input-field col s12 m4">
+                <select value="" name="servings_option" id="select2"  >
+                    <option value="{{ e.servings_id }}" selected>{{ e.servings }}</option>
+                    {% for entry in n_servings %}
+                    <option value="{{ entry.servings_id }}">{{ entry.servings }}</option>
+                    {% endfor %}
+                </select>
+                <span class="helper-text"><i>Select</i></span>
+            </div>
+            <div class="input-field col s12 m4">
+                <select value="" name="minutes_option" id="select3" >
+                    <option value="{{ e.time_id }}" selected>{{ e.minutes }} min</option>
+                    {% for entry in n_minutes %}
+                    <option value="{{ entry.time_id }}">{{ entry.minutes }}</option>
+                    {% endfor %}
+                </select>
+                <span class="helper-text"><i>Select</i></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <textarea id="description" name="description" value="" class="materialize-textarea validate"  required >{{ e.description }}</textarea>
+                <label for="description">Description</label>
+                <span class="helper-text" data-error="Required field" ></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="image" name="image" value="{{ e.image }}" type="text" class="validate" >
+                <label for="image">Image Url</label>
+            </div>
+        </div>
+    
+    {% endfor %}
+    
+    
+        <p class="flow-text">Ingredients:</p>
+        <p><strong><i>Delete or add new</i></strong></p>
+        <div>
+            {% for e in ing_data %}
+            <p>
+                <label class="ing-rows">
+                    <input type="checkbox" name="old-ingredient[]" value="{{ e.id }}" class="red" />
+                    <span>{{ e.quantity }} {{ e.unit }} {{ e.ingredient }}</span>
+                </label>
+            </p>
+            {% endfor %} 
+        <p class="red-text text-darken-2"><i>Selected ingredients will be deleted</i></p>
+        </div>
+        
+        <div id="ingredientsRows">
+            <div class="row" id="rowNum">
+                <div class="input-field col s2 hidden">
+                    <input id="quantity" name="quantity" value="" type="text" placeholder="Quantity" class=""  >
+                    <span class="helper-text" data-error="Only numbers" ></span>
+                </div>
+                <div class="input-field col s4">
+                    <input id="unit" name="unit" value="" type="text" placeholder="Unit" class=""  >
+                </div>
+                <div class="input-field col s5">
+                    <input id="ingredient" name="ingredient" value="" type="text" placeholder="Ingredient" class=""  >
+                </div>
+
+                <button id="add-btn" class="btn-floating btn-large blue lighten-1" onclick="addRow(this.form);" type="button" value="Add row">
+                    <i class="material-icons">add</i>
+                </button>
+            </div>
+        </div>
+        
+
+    
+        
+    {% for e in rec_data %}
+        
+        <p class="flow-text">Steps:</p>
+        <div class="row">
+            <div class="input-field col s12">
+                <textarea id="steps" name="steps" class="materialize-textarea validate" placeholder="STEP 1" required >{{ e.steps }}</textarea>
+                <label for="steps" >Preparation steps</label>
+                <span class="helper-text" data-error="Required field" ></span>
+            </div>
+        </div>
+        <div class="row">
+            <button class="btn waves-effect waves-light" name="action" value="action" >Submit </button>
+        </div>
+    
+    {% endfor %}
+    
+    </form>
+
+</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+<script>
+    // Turn off autocomplete and prevent default notifications
+    $('input').attr('autocomplete', 'off');
+    var forms = $('form');
+    for (var i = 0; i < forms.length; i++) {
+    forms[i].addEventListener('invalid', function(e) {
+        e.preventDefault();
+    }, true);
+}
+</script>
+<script>
+    $(document).ready(function(){ 
+        M.updateTextFields();
+        $('select').formSelect();
+        // Disabled submit button until all fields are filled
+        var $submit = $(':button[type="submit"]');
+        $submit.prop('disabled', true);
+        $('form').change(function() {
+            if ($('#select1 :selected').val() !== "") {
+                if ($('#select2 :selected').val() !== "") {
+                    if ($('#select3 :selected').val() !== "") {
+                        if ($('#title').val() !== "") {
+                            if ($('#description').val() !== "") {
+                                if ($('#unit').val() !== "") {
+                                    if ($('#ingredient').val() !== "") {
+                                        if ($('#quantity').val() !== "") { 
+                                            if ($.isNumeric($('#quantity').val()) === true) {
+                                                $submit.prop('disabled', false);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                $submit.prop('disabled', true);
+            }
+        }).change();
+
+        // Validation for quantity (can contain only numbers)
+        $('#quantity').on("change paste keyup focusout", function() {
+            $(this).val($(this).val().replace(/,/g, '.'));
+            if ($('#quantity').val() !== "") {
+                if ($.isNumeric($('#quantity').val()) === false) {
+                    $('#quantity').addClass("invalid");
+                    $submit.prop('disabled', true);
+                } else {
+                $('#quantity').removeClass("invalid");
+                }
+            }
+        }); 
+    });
+</script>
+
+<script>
+    // Delete selected (old) ingredients
+    $('.ing-rows input[type=checkbox]').click(function() {
+        $($(this).siblings('span')).toggleClass('cross-text');
+    });
+</script>
+
+<script>
+    // Add rows, remove rows - for ingredients input
+    var rowNum = 0;
+    function addRow(frm) {
+        rowNum ++;
+        var row = '<div class="row" id="rowNum'+rowNum+'"> \
+                  <div class="input-field col s2"><input name="quantity[]" value="'+frm.quantity.value+'" type="text" placeholder="Quantity"></div> \
+                  <div class="input-field col s4"><input name="unit[]" value="'+frm.unit.value+'" type="text" placeholder="Unit"></div> \
+                  <div class="input-field col s5"><input name="ingredient[]" value="'+frm.ingredient.value+'" type="text" placeholder="Ingredient"></div> \
+                  <button class="btn-floating btn-large waves-effect waves-light red accent-2" onclick="removeRow('+rowNum+');" type="button" value="Remove"> \
+                  <i class="material-icons">delete_forever</i></button></div>';
+        jQuery('#ingredientsRows').append(row);
+        frm.quantity.value = '';
+        frm.unit.value = '';
+        frm.ingredient.value = '';
+    };
+    function removeRow(rnum) {
+        jQuery('#rowNum'+rnum).remove();
+    };
+</script>
+
+{% endblock %}

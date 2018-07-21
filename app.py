@@ -11,6 +11,7 @@ import db_users
 import db_recipes
 import db_recipe_add
 import db_recipe_edit
+import db_recipe_search
 
 app = Flask(__name__)
 app.secret_key = "fhkjashgdfkhakjdfgkjasdgf"
@@ -227,6 +228,51 @@ def recipes():
     for entry in data:
         entry.description = entry.description.split("\r")
     return render_template('recipes.html', username=username, data=data)
+
+@app.route('/recipes/search', methods=['GET', 'POST'])
+def search_recipes():
+    username = helpers.username_set_or_none()
+    data_types = db_recipe_search.get_types()
+    data = []
+    keyw_title = ""
+    type_id = ""
+    ingred = ""
+    type_name = ""
+
+    if request.method == 'POST':
+        data = []
+        r_ids = []
+        # Get recipe IDs for title keyword
+        if request.form['keyw-title'] != "":
+            keyw_title = request.form['keyw-title'].strip().title()
+            for r_id in db_recipe_search.get_search_titles(keyw_title):
+                r_ids.append(r_id[0])
+        # Get recipe IDs for selected type
+        if request.form.get('type_option') != "":
+            type_id = request.form.get('type_option')
+            # Get type name from ID
+            for entry in data_types:
+                if entry[0] == type_id:
+                    type_name = entry[1]
+            for r_id in db_recipe_search.get_search_types(type_id):
+                r_ids.append(r_id[0])
+        # Get recipe IDs for selected ingredient
+        if request.form['keyw-ingr'] != "":
+            ingred = request.form['keyw-ingr'].strip().lower()
+            for r_id in db_recipe_search.get_search_ingredient(ingred):
+                r_ids.append(r_id[0])
+        
+        # Remove duplicate IDs
+        rec_ids = helpers.remove_duplicates(r_ids)
+        # Get recipe data for IDs
+        for r_id in rec_ids:
+            data.append(db_recipe_search.recipe_short(r_id)[0])
+        
+        # Format decription for display
+        for entry in data:
+            entry.description = entry.description.split("\r")
+
+    return render_template('recipe_search.html', username=username, types=data_types, data=data, keyw_title=keyw_title, sel_type_id=type_id, sel_type_name=type_name, keyw_ingr=ingred)
 
 @app.route('/recipes/details/<recipe_id>')
 def recipe_details(recipe_id):  

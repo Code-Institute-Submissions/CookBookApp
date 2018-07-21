@@ -10,14 +10,15 @@
 
     <div class=" col s12 m6">
         <div class="card">
-            <div class="card-image">
-                <img src="{{ recipe.image }}">
-            </div>
             <div class="card-content">
                 <span class="card-title">
                     <a href="{{url_for('recipe_details', recipe_id=recipe.recipe_id)}}">{{ recipe.title }}</a>
                 </span>
                 <p>{{ recipe.type_of_food }}</p>
+                <p>Prepare time: {{ recipe.minutes }} min</p>
+            </div>
+            <div class="card-image">
+                <img src="{{ recipe.image }}">
             </div>
             <div class="card-action">
                 {% for paragraph in recipe.description %}

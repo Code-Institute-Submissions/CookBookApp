@@ -1,0 +1,83 @@
+{% extends 'base.html' %} {% block content %}
+
+
+<h1>Search Recipes</h1>
+
+<!-- Search recipes -->
+<div class="row">
+    <form action="{{ url_for('search_recipes') }}" method="POST" class="col s12">
+        <div class="row">
+            <div class="input-field col s12 m4">
+                <input id="keyw-title" name="keyw-title" type="text" value="{{ keyw_title }}" >
+                <label for="keyw-title">Search titles by keyword</label>
+            </div>
+            <div class="input-field col s12 m4">
+                <select value="" name="type_option" >
+                    {% if sel_type_name != "" %}
+                    <option value="{{ sel_type_id }}" selected>{{ sel_type_name }}</option>
+                    {% else %}
+                    <option value="" disabled selected>Search type</option>
+                    {% endif %}
+                    
+                    {% for entry in types %}
+                        {% if (('Other' not in entry.type_of_food) and (sel_type_name != entry.type_of_food)) %}
+                    <option value="{{ entry.type_id }}" >{{ entry.type_of_food }}</option>
+                        {% endif %}
+                    {% endfor %}
+                    <option value="da3d511d-5699-4b30-bf2e-4ce442cec4f1">Other</option>
+                    {% if sel_type_name != "" %}
+                    <option value="">None/clear filter</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="input-field col s12 m4">
+                <input id="keyw-ingr" name="keyw-ingr" type="text" value="{{ keyw_ingr }}" >
+                <label for="keyw-ingr">Search ingredient</label>
+            </div>        
+        </div>        
+        <div class="row">
+            <button class="btn waves-effect waves-light" name="action" value="action" type="submit" >Search </button>
+        </div>
+    </form>
+</div>
+
+<!-- Display search results -->
+<div class="row">
+
+        {% for recipe in data %}
+    
+        <div class=" col s12 m6">
+            <div class="card">                
+                <div class="card-content">
+                    <span class="card-title">
+                        <a href="{{url_for('recipe_details', recipe_id=recipe.recipe_id)}}">{{ recipe.title }}</a>
+                    </span>
+                    <p>{{ recipe.type_of_food }}</p>
+                    <p>Prepare time: {{ recipe.minutes }} min</p>
+                </div>
+                <div class="card-image">
+                        <img src="{{ recipe.image }}">
+                    </div>
+                <div class="card-action">
+                    {% for paragraph in recipe.description %}
+                        <p>{{ paragraph }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+    
+        </div>
+    
+    
+        {% endfor %}
+    
+    </div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('select').formSelect();
+    });
+</script>
+
+{% endblock %}

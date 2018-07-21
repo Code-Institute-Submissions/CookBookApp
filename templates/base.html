@@ -22,6 +22,7 @@
                             <ul id="nav-mobile" class="right hide-on-med-and-down">
                                 <li><a href="/">Home</a></li>
                                 <li><a href="{{ url_for('recipes') }}">Recipes</a></li>
+                                <li><a href="{{ url_for('search_recipes') }}"><i class="material-icons">search</i></a></li>
                                 <li><a href="{{ url_for('add_recipe') }}">Add Recipe</a></li>
                                 
                                 {% if username %}
@@ -34,6 +35,7 @@
                             <ul class="sidenav" id="mobile-demo">
                                 <li><a href="/">Home</a></li>
                                 <li><a href="{{ url_for('recipes') }}">Recipes</a></li>
+                                <li><a href="{{ url_for('search_recipes') }}">Search</a></li>
                                 <li><a href="{{ url_for('add_recipe') }}">Add Recipe</a></li>
                                                                 
                                 {% if username %}

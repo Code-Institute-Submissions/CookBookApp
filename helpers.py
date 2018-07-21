@@ -3,7 +3,6 @@ from natsort import natsorted
 from operator import itemgetter
 import re
 
-
 # Sort numbers, add to list
 def sort_numbers(data, data_list):
     for entry in natsorted(data, key=itemgetter(1), reverse=False):
@@ -29,3 +28,11 @@ def isFloat(value):
         return True
     except ValueError:
         return False
+
+ # Remove duplicates from list
+def remove_duplicates(mylist):
+    seen = set()
+    seen_add = seen.add
+    return [r_id for r_id in mylist if not (r_id in seen or seen_add(r_id))]
+
+    

@@ -2,8 +2,9 @@ from cnxn import db_query, db_query_many
 
 # Get title and image of all recipes
 def recipe_short():
-    data = db_query("""SELECT data_Recipe.recipe_id, title, description, image, type_of_food FROM data_Recipe 
-                    INNER JOIN data_Type ON data_Recipe.type_id = data_Type.type_id;""")
+    data = db_query("""SELECT data_Recipe.recipe_id, title, description, image, type_of_food, minutes FROM data_Recipe 
+                    INNER JOIN data_Type ON data_Recipe.type_id = data_Type.type_id 
+                    INNER JOIN data_Time ON data_Recipe.time_id = data_Time.time_id ;""")
     return data
 
 # Get recipe details

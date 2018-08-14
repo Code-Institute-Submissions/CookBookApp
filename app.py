@@ -20,7 +20,19 @@ app.secret_key = "fhkjashgdfkhakjdfgkjasdgf"
 def index():
     # If user is logged in, logout button will be displayed
     username = helpers.username_set_or_none()
-    return render_template('index.html', username=username)
+    
+    # Get all types of food
+    data_types = db_recipes.get_all_types()
+    categories = []
+    for entry in data_types:
+        categories.append(entry[1])
+    
+    # Get one recipe for each category
+    data = []
+    for category in categories:
+        data.append(db_recipes.get_one_in_each_category(category))
+    
+    return render_template('index.html', username=username, data=data)
     
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -29,18 +41,13 @@ def login():
         password = request.form['password'].strip()
         # If entered data exist in DB, user will be logged in else error message is displayed
         login_data = db_users.check_username_password(username, password)
-        print(login_data)
         if login_data:
             # get user_id from DB, save user_id and username to session storage,
-            print('Login successfull')
             session['username'] = request.form['username']
-            id_data = db_users.get_user_id(username)
-            for entry in id_data:
-                session['user_id'] = entry.user_id
+            session['user_id'] = helpers.user_id_for_session(username)
             flash('Welcome back!')  
             return redirect(url_for('account'))
         else:
-            print('Not successful')
             error_wrong_username_password = 'Wrong username or password, please try again'
             return render_template('login.html', error_message=error_wrong_username_password)
     return render_template('login.html')
@@ -58,19 +65,14 @@ def register():
         if first.isalpha() and last.isalpha():
             # Check DB if username is availible
             username_availible = db_users.check_username_dont_exists(username)
-            print(username_availible)
             if username_availible:
                 # User data added to DB, user_id and username saved to session storage
                 db_users.add_new_user_to_db(first, last, username, password)
-                print('Registration successfull')
                 session['username'] = form.username.data
-                id_data = db_users.get_user_id(username)
-                for entry in id_data:
-                    session['user_id'] = entry.user_id
+                session['user_id'] = helpers.user_id_for_session(username)
                 flash('Welcome to your new account!')
                 return redirect(url_for('account'))
             else:
-                print('Username taken, please choose a new one')
                 # Display error message if username already taken
                 error_username_taken = 'Username is already taken, please choose a new one'
                 return render_template('register.html', form=form, error_message=error_username_taken)
@@ -86,8 +88,12 @@ def account():
     if 'username' in session:
         username = session['username']
     else:
-        return redirect(url_for('index'))
-    return render_template('account.html', username=username)
+        return redirect(url_for('login'))
+    
+    # Get all recipes from user
+    data = db_recipes.recipes_from_user(username)
+    
+    return render_template('account.html', username=username, data=data)
 
 @app.route('/account/addrecipe', methods=['GET', 'POST'])
 def add_recipe():
@@ -214,9 +220,7 @@ def compare_data(recipe_id):
     
     # Update data_Recipe
         db_recipe_edit.update_recipe_data(recipe_id, title, description, steps, image, type_id, servings_id, time_id)
-   
 
-        
     return redirect(url_for('recipe_details', recipe_id=recipe_id))
 
 @app.route('/recipes')
@@ -229,8 +233,9 @@ def recipes():
         entry.description = entry.description.split("\r")
     return render_template('recipes.html', username=username, data=data)
 
-@app.route('/recipes/search', methods=['GET', 'POST'])
-def search_recipes():
+@app.route('/recipes/search', defaults={'category': ''}, methods=['GET', 'POST'])
+@app.route('/recipes/search/<category>', methods=['GET', 'POST'])
+def search_recipes(category):
     username = helpers.username_set_or_none()
     data_types = db_recipe_search.get_types()
     data = []
@@ -238,6 +243,25 @@ def search_recipes():
     type_id = ""
     ingred = ""
     type_name = ""
+    
+    if request.method == 'GET':
+        type_name = category
+        print(type_name)
+        # Get type ID from name
+        get_type_id = db_recipe_search.get_type_id(type_name)
+        for entry in get_type_id:
+            type_id = entry[0]
+        # Get recipe IDs for selected type
+        r_ids = []
+        for r_id in db_recipe_search.get_search_types(type_id):
+            r_ids.append(r_id[0])
+        # Get recipe data for IDs
+        data = []
+        for r_id in r_ids:
+            data.append(db_recipe_search.recipe_short(r_id)[0])
+        # Format decription for display
+        for entry in data:
+            entry.description = entry.description.split("\r")
 
     if request.method == 'POST':
         data = []
@@ -295,8 +319,9 @@ def recipe_details(recipe_id):
 
 @app.route('/logout')
 def logout():
-    # Remove username from session storage and redirect
+    # Remove username and user_id from session storage and redirect
     session.pop('username', None)
+    session.pop('user_id', None)
     return redirect(url_for('index'))
 
 

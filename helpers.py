@@ -2,11 +2,7 @@ from flask import Flask, render_template, redirect, request, url_for, session, f
 from natsort import natsorted
 from operator import itemgetter
 import re
-
-# Sort numbers, add to list
-def sort_numbers(data, data_list):
-    for entry in natsorted(data, key=itemgetter(1), reverse=False):
-        data_list.append(entry)
+import db_users
 
 # Set username
 def username_set_or_none():
@@ -16,6 +12,18 @@ def username_set_or_none():
         username = None
     return username
 
+# Get user_id to store in sessions
+def user_id_for_session(username):
+    id_data = db_users.get_user_id(username)
+    for entry in id_data:
+        return entry.user_id
+    return
+
+# Sort numbers, add to list
+def sort_numbers(data, data_list):
+    for entry in natsorted(data, key=itemgetter(1), reverse=False):
+        data_list.append(entry)
+    return
 # Remove too many spaces
 def remove_whitespaces(s):
     new_s = re.sub(r"\s\s+", " ", s)

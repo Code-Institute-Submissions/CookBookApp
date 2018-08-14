@@ -13,6 +13,16 @@ def db_query(query, *kwargs):
     cnxn.close()
     return results
 
+def db_query_one(query, *kwargs):
+    cnxn = pyodbc.connect(conn_str)
+    cursor = cnxn.cursor()
+    cursor.execute(query, *kwargs)
+    result = cursor.fetchone()
+    
+    cursor.close()
+    cnxn.close()
+    return result
+
 # Read from separate tables, get all
 def db_query_many(query1, query2, query3):
     cnxn = pyodbc.connect(conn_str)

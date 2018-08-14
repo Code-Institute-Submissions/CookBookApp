@@ -4,7 +4,36 @@
 
 <h1>Home Page</h1>
 
+<div class="row">
 
+    {% for recipe in data %}
+    
+    {% if recipe.recipe_id %}
+
+
+    <div class=" col s12 m6">
+        <div class="card">
+            <div class="card-action">
+                <span class="card-title">
+                    <a href="{{url_for('search_recipes', category=recipe.type_of_food)}}">{{ recipe.type_of_food }}</a>
+                </span>
+            </div>
+            <div class="card-image">
+                <img src="{{ recipe.image }}">
+            </div>
+            <div class="card-content">
+                <a href="{{url_for('recipe_details', recipe_id=recipe.recipe_id)}}">{{ recipe.title }}</a>
+              </div>
+            
+        </div>
+
+    </div>
+
+
+    {% endif %}
+    {% endfor %}
+
+</div>
 
 
 

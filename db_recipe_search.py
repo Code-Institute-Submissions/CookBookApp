@@ -28,3 +28,8 @@ def recipe_short(recipe_id):
                     INNER JOIN data_Time ON data_Recipe.time_id = data_Time.time_id 
                     WHERE data_recipe.recipe_id=?;""", recipe_id)
     return data
+
+# Get type ID from name
+def get_type_id(type_name):
+    data = db_query("SELECT type_id from data_Type WHERE type_of_food=?;", type_name)
+    return data

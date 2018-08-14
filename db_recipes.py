@@ -1,10 +1,18 @@
-from cnxn import db_query, db_query_many
+from cnxn import db_query, db_query_many, db_query_one
 
-# Get title and image of all recipes
+# Get basic info of all recipes
 def recipe_short():
     data = db_query("""SELECT data_Recipe.recipe_id, title, description, image, type_of_food, minutes FROM data_Recipe 
                     INNER JOIN data_Type ON data_Recipe.type_id = data_Type.type_id 
                     INNER JOIN data_Time ON data_Recipe.time_id = data_Time.time_id ;""")
+    return data
+
+# Get basic info of recipes of user
+def recipes_from_user(username):
+    data = db_query("""SELECT data_Recipe.recipe_id, title, creation_date, type_of_food FROM data_Recipe 
+                    INNER JOIN data_Type ON data_Recipe.type_id = data_Type.type_id 
+                    INNER JOIN data_User ON data_Recipe.user_id = data_User.user_id 
+                    WHERE username=?;""", username)
     return data
 
 # Get recipe details
@@ -33,4 +41,16 @@ def get_types_servings_time():
     data = db_query_many(("SELECT type_id, type_of_food FROM data_Type AS table_types;"), 
                     ("SELECT servings_id, servings FROM data_Servings AS table_servings;"), 
                     ("SELECT time_id, minutes FROM data_Time AS table_time;"))
+    return data
+
+# Get all types
+def get_all_types():
+    data = db_query("SELECT * FROM data_Type")  
+    return data
+
+# Get 1 recipe for each category - for Home Page
+def get_one_in_each_category(category):
+    data = db_query_one("""SELECT TOP 1 recipe_id, title, image, type_of_food FROM data_Recipe 
+                    INNER JOIN data_Type ON data_Recipe.type_id = data_Type.type_id 
+                    WHERE type_of_food=?;""", category)
     return data

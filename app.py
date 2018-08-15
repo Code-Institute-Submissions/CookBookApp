@@ -246,22 +246,20 @@ def search_recipes(category):
     
     if request.method == 'GET':
         type_name = category
-        print(type_name)
         # Get type ID from name
-        get_type_id = db_recipe_search.get_type_id(type_name)
-        for entry in get_type_id:
-            type_id = entry[0]
-        # Get recipe IDs for selected type
-        r_ids = []
-        for r_id in db_recipe_search.get_search_types(type_id):
-            r_ids.append(r_id[0])
-        # Get recipe data for IDs
-        data = []
-        for r_id in r_ids:
-            data.append(db_recipe_search.recipe_short(r_id)[0])
-        # Format decription for display
-        for entry in data:
-            entry.description = entry.description.split("\r")
+        if type_name != '':
+            type_id = db_recipe_search.get_type_id(type_name)[0]
+            # Get recipe IDs for selected type
+            r_ids = []
+            for r_id in db_recipe_search.get_search_types(type_id):
+                r_ids.append(r_id[0])
+            # Get recipe data for IDs
+            data = []
+            for r_id in r_ids:
+                data.append(db_recipe_search.recipe_short(r_id)[0])
+            # Format decription for display
+            for entry in data:
+                entry.description = entry.description.split("\r")        
 
     if request.method == 'POST':
         data = []

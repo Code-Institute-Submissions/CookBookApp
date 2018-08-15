@@ -1,4 +1,4 @@
-from cnxn import db_query
+from cnxn import db_query, db_query_one
 
 # Get types data for dropdown
 def get_types():
@@ -31,5 +31,5 @@ def recipe_short(recipe_id):
 
 # Get type ID from name
 def get_type_id(type_name):
-    data = db_query("SELECT type_id from data_Type WHERE type_of_food=?;", type_name)
+    data = db_query_one("SELECT type_id from data_Type WHERE type_of_food=?;", type_name)
     return data

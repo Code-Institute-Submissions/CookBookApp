@@ -1,0 +1,46 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+  
+.crop {
+    width: auto;
+    height: 150px;
+    overflow: hidden;
+}
+
+.home-page-recipe-title a {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.recipes-page-recipe-title {
+    min-height: 65px;
+}
+
+.recipes-page-recipe-title.card-title {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 400;
+}
+
+.card-action.card-category-style {
+    padding-left: 0px;
+    color: #ffab40;
+    font-size: 16px;
+}
+
+.recipes-page-description {
+    overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

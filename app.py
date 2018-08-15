@@ -230,7 +230,7 @@ def recipes():
     # Get basic info for all recipes
     data = db_recipes.recipe_short()
     for entry in data:
-        entry.description = entry.description.split("\r")
+        entry.description = entry.description.split("\r", 1)[::100]
     return render_template('recipes.html', username=username, data=data)
 
 @app.route('/recipes/search', defaults={'category': ''}, methods=['GET', 'POST'])
@@ -259,7 +259,7 @@ def search_recipes(category):
                 data.append(db_recipe_search.recipe_short(r_id)[0])
             # Format decription for display
             for entry in data:
-                entry.description = entry.description.split("\r")        
+                entry.description = entry.description.split("\r", 1)[::100]      
 
     if request.method == 'POST':
         data = []
@@ -292,7 +292,7 @@ def search_recipes(category):
         
         # Format decription for display
         for entry in data:
-            entry.description = entry.description.split("\r")
+            entry.description = entry.description.split("\r", 1)[::100]
 
     return render_template('recipe_search.html', username=username, types=data_types, data=data, keyw_title=keyw_title, sel_type_id=type_id, sel_type_name=type_name, keyw_ingr=ingred)
 

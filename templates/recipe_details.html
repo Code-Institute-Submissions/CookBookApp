@@ -1,9 +1,7 @@
 {% extends 'base.html' %} {% block content %}
 
 
-<h1>Recipe Details</h1>
 
-    
 <div class="row">
     <div class=" col s12">
 
@@ -11,16 +9,16 @@
 
         <div class="row">
             <div class="col s12">
-                <h3>{{ entry.title }}</h3>
-                <p class="flow-text"><i>{{ entry.type_of_food }}</i></p>
+                <h3 class="title-recipe-details">{{ entry.title }}</h3>
+                <p class="flow-text category-recipe-details"><i>{{ entry.type_of_food }}</i></p>
             </div>
         </div>
 
         <div class="row">
         <!-- Data -->
             <div class="col s12 m6">
-                <p>Prepare time: {{ entry.minutes }} minutes</p>
-                <p>Servings: {{ entry.servings }}</p>
+                <p>Prepare time: <strong>{{ entry.minutes }} minutes</strong></p>
+                <p>Servings: <strong>{{ entry.servings }}</strong></p>
                 <p>Author: {{ entry.username.title() }}</p>
                 <p>Created: {{ entry.creation_date.strftime('%d.%m.%Y') }}</p>
             
@@ -77,6 +75,18 @@
         </div>
 
 
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12">
+        <div class="card-panel card-panel-details grey lighten-5 z-depth-1">
+
+              <span class="black-text">
+                Bon appétit! ~ Buon appetito! ~ Guten Appetit! ~ Enjoy your meal! ~ Dober tek! ~ Afiyet olsun!
+              </span>
+
+        </div>
     </div>
 </div>
 

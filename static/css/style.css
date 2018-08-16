@@ -7,13 +7,24 @@ body {
 main {
     flex: 1 0 auto;
 }
-  
+
+nav .brand-logo {
+    padding: 0 0 0 20px;
+}
+
+/* Crop images in cards */
 .crop {
     width: auto;
     height: 150px;
     overflow: hidden;
 }
 
+/* Home page */
+.card-panel {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 16px;
+}
 .home-page-recipe-title a {
     display: block;
     white-space: nowrap;
@@ -22,25 +33,40 @@ main {
     max-width: 250px;
 }
 
+/* Cards style - recipes and search pages*/
 .recipes-page-recipe-title {
     min-height: 65px;
 }
-
 .recipes-page-recipe-title.card-title {
     font-size: 20px;
     line-height: 28px;
     font-weight: 400;
 }
-
 .card-action.card-category-style {
     padding-left: 0px;
     color: #ffab40;
     font-size: 16px;
 }
-
 .recipes-page-description {
     overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Recipe details */
+.title-recipe-details {
+    color: #039be5;
+    margin-top: 50px;
+}
+.category-recipe-details {
+    color: #ffab40;
+}
+.card-panel.card-panel-details {
+    font-style: italic;
+}
+
+/* Footer */
+.grey-text.text-lighten-4.footer-bottom-link {
+    color: rgba(255,255,255,0.8) !important;
 }

@@ -7,7 +7,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
-        <link rel="stylesheet" type="text/css" href="/static/css/style.css?q=13315730" >
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css?q=1537015730" >
         
         <title>CookBook</title>
     </head>
@@ -59,16 +59,15 @@
             <div class="container">
                 <div class="row">
                     <div class="col l6 s12">
-                        <h5 class="white-text">Footer Content</h5>
-                        <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+                        <h5 class="white-text">CookBook</h5>
+                        <p class="grey-text text-lighten-4">Online CookBook where you can store your recipes or search for new ideas.</p>
                     </div>
                     <div class="col l4 offset-l2 s12">
-                        <h5 class="white-text">Links</h5>
                         <ul>
-                            <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
+                            <li><a class="grey-text text-lighten-3" href="/">Home</a></li>
+                            <li><a class="grey-text text-lighten-3" href="{{ url_for('recipes') }}">Recipes</a></li>
+                            <li><a class="grey-text text-lighten-3" href="{{ url_for('search_recipes') }}">Search</a></li>
+                            <li><a class="grey-text text-lighten-3" href="{{ url_for('add_recipe') }}">Add Recipe</a></li>
                         </ul>
                     </div>
                 </div>
@@ -76,7 +75,7 @@
             <div class="footer-copyright">
               <div class="container">
                 © 2018 tjasajan
-              <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+              <a class="grey-text text-lighten-4 right footer-bottom-link" href="https://www.codeinstitute.net/" target="_blank" >Code Instutute</a>
               </div>
             </div>
         </footer>

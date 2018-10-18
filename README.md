@@ -75,7 +75,7 @@ Add to Heroku app repository:
 heroku git:remote -a cookbookappproject
 ~~~~
 
-On Heroku platform add buildpack for Python. 
+On Heroku platform add buildpack for Python.  
 Add custom buildpack for pyodbc: 
 ~~~~
 heroku buildpacks:add --index 1 https://github.com/heroku/heroku-buildpack-apt

@@ -38,6 +38,9 @@ Source code is availible on [GitHub](https://github.com/tjasajan/CookBookApp)
 + HTML5, CSS3
 + Chrome DevTools
 
+## Database diagram
+![Diagram](https://github.com/tjasajan/CookBookApp/blob/master/DB/DB-Diagram.png?raw=true)
+
 ## Installation
 
 1. Download files

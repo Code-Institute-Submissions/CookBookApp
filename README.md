@@ -17,7 +17,7 @@ They can search for recipes using title keywords, type ot ingredient.
 There is also basic registration and authentication. 
 
 
-This Project is deployed [here](https://cookbookappproject.herokuapp.com/)
+This Project is deployed [here](http://testcase.moj.gs/)
 
 Source code is availible on [GitHub](https://github.com/tjasajan/CookBookApp)
 
@@ -68,36 +68,13 @@ Output installed packages for dependency management:
 pip freeze --local > requirements.txt
 ~~~~
 
-Create Procfile needed for Heroku deployment:
+I was trying to deploy app to Heroku, but I was getting an error: 
 ~~~~
-echo web: python app.py
-~~~~
-
-Add to Heroku app repository:
-~~~~
-heroku git:remote -a cookbookappproject
+pyodbc.Error: ('01000', "[01000] [unixODBC][Driver Manager]Can't open lib 'SQL Server Native Client 11.0' : file not found (0) (SQLDriverConnect)")
 ~~~~
 
-On Heroku platform add buildpack for Python.  
-Add custom buildpack for pyodbc: 
-~~~~
-heroku buildpacks:add --index 1 https://github.com/heroku/heroku-buildpack-apt
-~~~~
+I couldn't find a buildpack which would be compatible with this app. 
 
-Add aptfile with content:
-~~~~
-unixodbc
-unixodbc-dev
-python-pyodbc
-libsqliteodbc
-~~~~
+My friend set up a server, Microsoft IIS and configured it to support python. 
 
-Configure app:
-~~~~
-heroku ps:scale web=1
-~~~~
-
-On Heroku site add settings for IP (0.0.0.0) and PORT (5000) and restart all dynos.
-
-
-
+After that, I added files and installed requirements. Web.config file and some additional settings on the server were needed. 

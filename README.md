@@ -73,7 +73,7 @@ I was trying to deploy app to Heroku, but I was getting an error:
 pyodbc.Error: ('01000', "[01000] [unixODBC][Driver Manager]Can't open lib 'SQL Server Native Client 11.0' : file not found (0) (SQLDriverConnect)")
 ~~~~
 
-I couldn't find a buildpack which would be compatible with this app. 
+I couldn't find a buildpack which would be compatible with this app, it seems that Heroku doesn't support pyodbc. 
 
 My friend set up a server, Microsoft IIS and configured it to support python. 
 
